@@ -1,0 +1,8 @@
+﻿<Window x:Class="EventLogger.EventLoggerMainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="EventLoggerMainWindow" Height="350" Width="525" Visibility="Collapsed" ShowInTaskbar="False" WindowState="Minimized">
+    <Grid>
+        
+    </Grid>
+</Window>
