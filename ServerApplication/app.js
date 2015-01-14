@@ -85,6 +85,7 @@ db.once('open', function () {
     newEntry["payload"] = payload;
     newEntry["identifier"] = identifier;
     newEntry["title"] = "";
+    newEntry["origin"] = req.body.hospital;
     collection.insert(newEntry, function(err){
       if(err) {console.log(err);}
       collection.find({"isRead": false}, function(err, data){
