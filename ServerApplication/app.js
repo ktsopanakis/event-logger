@@ -104,6 +104,24 @@ db.once('open', function () {
       console.log("received ping: ", d);
       socket.emit("pong", {});
     });
+    socket.on("messageRead", function(data){
+      var collection = db.collection(data.origin);
+      var BSON = require('mongodb').BSONPure;
+      collection.find({_id: BSON.ObjectID(data.id)}, function(err, obj){
+        if(err) {console.log("log find error: ", err);}
+        obj.toArray(function(err, objArr){
+          if(err) {console.log("find to array error: ", err);}
+          var logToModify = objArr[0];
+          logToModify["isRead"] = true;
+          if(logToModify["readFrom"] === undefined) logToModify["readFrom"] = [];
+          logToModify["readFrom"].push(data.readFrom);
+          collection.update({_id: BSON.ObjectID(data.id)}, logToModify, function(err){
+            if(err) {console.log("error upon log message modification: ", err);}
+            socket.emit("messageReadOk", logToModify);
+          });
+        });
+      });
+    });
   });
   exports.io = io;
 });
