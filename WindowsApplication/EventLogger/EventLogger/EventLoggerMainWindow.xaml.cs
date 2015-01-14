@@ -32,6 +32,10 @@ namespace EventLogger
 
             ServerConnection.ConnectToServer();
 
+            //numOfNotifications = 0;
+            //numOfNotifications = 50;
+            numOfNotifications = 100;
+
             if (numOfNotifications == 0)
                 icon.Icon = Properties.Resources.smiley;
             else if (numOfNotifications > 99)
