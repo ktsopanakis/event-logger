@@ -91,7 +91,7 @@ db.once('open', function () {
       collection.find({"isRead": false}, function(err, data){
         if(err) {console.log("error in find: ", err);}
         data.toArray(function(err, unreadLogs){
-          io.emit("unreadErrorMessages", {unread: unreadLogs});
+          io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
           res.send("ok");
         });
       });
