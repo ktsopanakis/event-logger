@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
@@ -15,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Drawing;
+using Newtonsoft.Json;
 
 namespace EventLogger
 {
@@ -30,30 +32,36 @@ namespace EventLogger
         {
             InitializeComponent();
 
-            ServerConnection.ConnectToServer();
+            string messages = ServerConnection.ConnectToServer();
+
+
+            if (messages != null)
+            {
+                UnreadErrorMessages unread = Newtonsoft.Json.JsonConvert.DeserializeObject<UnreadErrorMessages>(messages);
+            }
 
             //numOfNotifications = 0;
             //numOfNotifications = 50;
             numOfNotifications = 100;
 
             if (numOfNotifications == 0)
-                icon.Icon = Properties.Resources.smiley;
+                icon.Icon = Properties.Resources.all_good;
             else if (numOfNotifications > 99)
                 icon.Icon = Properties.Resources.angry_smiley;
             else
             {
                 icon.Icon = Properties.Resources.square_shape;
-                NumberOnIcon(556, ref icon);
+                NumberOnIcon(numOfNotifications, ref icon);
             }
             
             icon.Visible = true;
             icon.ShowBalloonTip(5000, "hello", "world", ToolTipIcon.Info);
             icon.Click += icon_Click;
-
             
 
-            
             System.Windows.Application.Current.Exit += Current_Exit;
+
+
         }
 
         void Current_Exit(object sender, ExitEventArgs e)
@@ -63,10 +71,18 @@ namespace EventLogger
 
         void icon_Click(object sender, EventArgs e)
         {
-            WindowState= WindowState.Normal;
+            this.WindowState= WindowState.Normal;
+            this.ShowInTaskbar = true;
         }
 
-        
+        protected override void OnClosing( CancelEventArgs e)
+        {
+            e.Cancel = true;
+
+            this.WindowState = WindowState.Minimized;
+            this.ShowInTaskbar = false;
+        }
+       
         #region Notification number on icon
 
         public void NumberOnIcon(int number,  ref System.Windows.Forms.NotifyIcon icon)
@@ -86,5 +102,9 @@ namespace EventLogger
 
         #endregion
 
+        private void CloseButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
+        }
     }
 }

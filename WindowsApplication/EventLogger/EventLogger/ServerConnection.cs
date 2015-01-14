@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SocketIOClient;
+using Newtonsoft.Json;
 
 namespace EventLogger
 {
@@ -11,28 +12,44 @@ namespace EventLogger
     {
         private static Uri WebSocketURI;
         private static Client socket;
+        private static string messages;
 
-        public static void ConnectToServer()
+        public static string ConnectToServer()
         {
-            WebSocketURI = new Uri("http://panacea-ts.dotbydot.eu:1337/");
+            WebSocketURI = new Uri("http://162.209.79.120:29017/");
             socket = new Client(WebSocketURI.ToString());
 
             socket.Opened += SocketOpened;
             socket.Error += SocketError;
-            socket.Message += SocketMessage;
+            //socket.Message += SocketMessage;
 
-            socket.Connect();
+            System.Net.WebRequest.DefaultWebProxy = null;
 
+            try
+            {
+                socket.Connect();
+            }
+            catch
+            {
+            }
+            ;
             socket.On("connect", fn => { Console.WriteLine("On connect message: " + fn.MessageText); });
 
             socket.On("open", fn => { Console.WriteLine("On open message" + fn.MessageText); });
 
-            socket.On("eventname", fn =>
+            
+            socket.On("unreadErrorMessages", fn =>
             {
-                
+                messages = fn.Json.Args[0];
             });
 
+            return messages;
 
+        }
+
+        public static string DataFromServer()
+        {
+            return "";
         }
 
 
@@ -50,11 +67,11 @@ namespace EventLogger
             Console.WriteLine(e.Message);
         }
 
-        static void SocketMessage(object sender, MessageEventArgs e)
-        {
-            Console.WriteLine("message event handler");
-            Console.WriteLine(e.Message);
-        }
+       //static void SocketMessage(object sender, MessageEventArgs e)
+       //{
+       //    Console.WriteLine("message event handler");
+       //    Console.WriteLine(e.Message);
+       //}
 
         #endregion
     }
