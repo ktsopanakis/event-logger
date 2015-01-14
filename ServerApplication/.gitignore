@@ -1,0 +1,12 @@
+node_modules/*
+*.swp
+*.njsproj
+*.suo
+*.sln
+.settings/*
+.project
+.jshintrc
+iisnode/*
+npm-debug.log
+.idea/*
+

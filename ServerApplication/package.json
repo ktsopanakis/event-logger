@@ -1,0 +1,25 @@
+{
+  "name": "EventLogger",
+  "version": "0.0.1",
+  "description": "Logger server app",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
+    "start": "node app.js"
+  },
+  "private": true,
+  "repository": "https://github.com/ktsopanakis/event-logger.git",
+  "keywords": [
+    "Node.js",
+    "EventLogger"
+  ],
+  "author": "Dot By Dot",
+  "license": "",
+  "readmeFilename": "README.md",
+  "dependencies": {
+    "express": "^4.11.0",
+    "mongodb": "^1.4.28",
+    "mongoose": "^3.8.21",
+    "socket.io": "^1.2.1"
+  }
+}
