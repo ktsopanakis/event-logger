@@ -63,9 +63,9 @@ namespace EventLogger.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon favicon {
+        internal static System.Drawing.Icon angry_smiley {
             get {
-                object obj = ResourceManager.GetObject("favicon", resourceCulture);
+                object obj = ResourceManager.GetObject("angry_smiley", resourceCulture);
                 return ((System.Drawing.Icon)(obj));
             }
         }
@@ -77,6 +77,26 @@ namespace EventLogger.Properties {
             get {
                 object obj = ResourceManager.GetObject("Icon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon smiley {
+            get {
+                object obj = ResourceManager.GetObject("smiley", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon square_shape {
+            get {
+                object obj = ResourceManager.GetObject("square_shape", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
             }
         }
     }

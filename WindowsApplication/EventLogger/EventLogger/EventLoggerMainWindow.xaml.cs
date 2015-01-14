@@ -14,7 +14,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SocketIOClient;
+using System.Drawing;
 
 namespace EventLogger
 {
@@ -24,16 +24,31 @@ namespace EventLogger
     public partial class EventLoggerMainWindow : Window
     {
         System.Windows.Forms.NotifyIcon icon = new NotifyIcon();
+        private int numOfNotifications;
 
         public EventLoggerMainWindow()
         {
             InitializeComponent();
-            icon.Icon = Properties.Resources.favicon;
+
+            ServerConnection.ConnectToServer();
+
+            if (numOfNotifications == 0)
+                icon.Icon = Properties.Resources.smiley;
+            else if (numOfNotifications > 99)
+                icon.Icon = Properties.Resources.angry_smiley;
+            else
+            {
+                icon.Icon = Properties.Resources.square_shape;
+                NumberOnIcon(556, ref icon);
+            }
+            
             icon.Visible = true;
             icon.ShowBalloonTip(5000, "hello", "world", ToolTipIcon.Info);
             icon.Click += icon_Click;
 
-            ConnectToServer();
+            
+
+            
             System.Windows.Application.Current.Exit += Current_Exit;
         }
 
@@ -47,41 +62,25 @@ namespace EventLogger
             WindowState= WindowState.Normal;
         }
 
-        public void ConnectToServer()
+        
+        #region Notification number on icon
+
+        public void NumberOnIcon(int number,  ref System.Windows.Forms.NotifyIcon icon)
         {
-            Uri WebSocketURI = new Uri("http://panacea-ts.dotbydot.eu:1337/");
-            Client socket = new Client(WebSocketURI.ToString());
+            Graphics canvas;
+            Bitmap iconBitmap = new Bitmap(60,60);
+            canvas = Graphics.FromImage(iconBitmap);
+            canvas.DrawIcon(icon.Icon, 0, 0);
 
-            socket.Opened += SocketOpened;
-            socket.Error += SocketError;
-            socket.Message += SocketMessage;
+            StringFormat format = new StringFormat();
+            format.Alignment = StringAlignment.Center;
 
-            socket.Connect();
+            canvas.DrawString(number.ToString(),new Font("Calibri",30), new SolidBrush(System.Drawing.Color.Crimson), new RectangleF(0,0,60,60), format );
 
-            socket.On("connect", fn => { Console.WriteLine("On connect message: " + fn.MessageText); });
-
-            socket.On("open", fn => { Console.WriteLine("On open message" + fn.MessageText);});
-
-            
+            icon.Icon = System.Drawing.Icon.FromHandle(iconBitmap.GetHicon());
         }
 
-        static void SocketOpened(object sender, EventArgs e)
-        {
-            Console.WriteLine("opened event handler");
-            Console.WriteLine(e.ToString());
-        }
-
-        static void SocketError(object sender, SocketIOClient.ErrorEventArgs e)
-        {
-            Console.WriteLine("error event handler");
-            Console.WriteLine(e.Message);
-        }
-
-        static void SocketMessage(object sender, MessageEventArgs e)
-        {
-            Console.WriteLine("message event handler");
-            Console.WriteLine(e.Message);
-        }
+        #endregion
 
     }
 }
