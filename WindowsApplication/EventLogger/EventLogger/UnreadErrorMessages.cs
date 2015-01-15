@@ -28,7 +28,7 @@ namespace EventLogger
         public Identifier Identifier { get; set; }
 
         [DataMember(Name = "timestamp")]
-        public string Timestamp { get { return null; } set { Date = UnixTimeStampToDateTime(Double.Parse(value)); }}
+        public string Timestamp { get { return null; } set { Date = (value!=null ? UnixTimeStampToDateTime(Double.Parse(value)): new DateTime()) ; }}
 
         public DateTime Date { get; set; }
 
