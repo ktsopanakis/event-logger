@@ -27,13 +27,17 @@ namespace EventLogger
     {
 
         public ObservableCollection<Message> messages = new ObservableCollection<Message>();
+        public EventHandler<int> IconUpdateNeeded;
+
+        void OnIconUpdateNeeded(int numOfNotifications)
+        {
+            if (IconUpdateNeeded != null) IconUpdateNeeded(this, numOfNotifications);
+        }
 
         public EventLoggerPage()
         {
             InitializeComponent();
             
-            App.Current.Properties["numOfMessages"] = 0;
-
             ServerConnection serve = new ServerConnection();
             serve.MessageReceived += (sender, message) => NewMessageReceived(message);
             serve.ConnectToServer();
@@ -58,46 +62,20 @@ namespace EventLogger
 
             });
 
-            App.Current.Properties["numOfMessages"] = messages.Count();
+            OnIconUpdateNeeded(messages.Count());
 
-           // numOfNotifications = messages.Count();
 
            // UpdateIcon();
 
         }
 
-        //private void UpdateIcon()
-        //{
-        //    if (numOfNotifications == 0)
-        //        icon.Icon = Properties.Resources.all_good;
-        //    else if (numOfNotifications > 99)
-        //        icon.Icon = Properties.Resources.angry_smiley;
-        //    else
-        //    {
-        //        icon.Icon = Properties.Resources.square_shape;
-        //        NumberOnIcon(numOfNotifications, ref icon);
-        //    }
-        //}
 
-       //#region Notification number on icon
-       //
-       //public void NumberOnIcon(int number, ref System.Windows.Forms.NotifyIcon icon)
-       //{
-       //    Graphics canvas;
-       //    Bitmap iconBitmap = new Bitmap(60, 60);
-       //    canvas = Graphics.FromImage(iconBitmap);
-       //    canvas.DrawIcon(icon.Icon, 0, 0);
-       //
-       //    StringFormat format = new StringFormat();
-       //    format.Alignment = StringAlignment.Center;
-       //
-       //    canvas.DrawString(number.ToString(), new Font("Calibri", 30), new SolidBrush(System.Drawing.Color.Crimson), new RectangleF(0, 0, 60, 60), format);
-       //
-       //    icon.Icon = System.Drawing.Icon.FromHandle(iconBitmap.GetHicon());
-       //}
-       //
-       //#endregion
+        private void ErrorListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedRow = (sender as System.Windows.Controls.ListView).SelectedItem;
 
+            
+        }
     }
 
     //public class MessagesEventArgs : EventArgs

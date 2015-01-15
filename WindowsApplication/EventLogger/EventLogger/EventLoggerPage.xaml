@@ -5,18 +5,37 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+    
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
             <RowDefinition/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <ListView Name="ErrorListView">
+        <ListView Name="ErrorListView" SelectionChanged="ErrorListView_OnSelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListView.View>
                 <GridView>
-                    <GridViewColumn  DisplayMemberBinding="{Binding Date}" Header="Date"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Origin}" Header="Origin"/>
-                    <GridViewColumn DisplayMemberBinding="{Binding Payload}" Header="Payload"/>
+                    <GridViewColumn Header="Date">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}" FontWeight="Bold" Name="DateBlock"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Origin">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Origin}" FontWeight="Bold" Name="OriginBlock"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="Payload">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="Bold" Name="PayloadBlock"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>

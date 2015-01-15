@@ -72,6 +72,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AppIcon.cs" />
     <Compile Include="EventLoggerPage.xaml.cs">
       <DependentUpon>EventLoggerPage.xaml</DependentUpon>
     </Compile>

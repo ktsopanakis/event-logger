@@ -13,5 +13,5 @@
                   Name="MainModernWindow"
                   Style="{StaticResource BlankWindow}">
     
-   <eventLogger:EventLoggerPage/>
+   <eventLogger:EventLoggerPage x:Name="LoggerPage"/>
 </mui:ModernWindow>

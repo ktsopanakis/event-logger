@@ -29,7 +29,7 @@ namespace EventLogger
     /// </summary>
     public partial class EventLoggerMainWindow : ModernWindow
     {
-        System.Windows.Forms.NotifyIcon icon = new NotifyIcon();
+        AppIcon Icon = new AppIcon();
 
         public EventLoggerMainWindow()
         {
@@ -39,27 +39,16 @@ namespace EventLogger
             this.ShowInTaskbar = false;
             this.Visibility = Visibility.Collapsed;
 
-            icon.Icon = Properties.Resources.all_good;
-
-            icon.Visible = true;
-            icon.ShowBalloonTip(5000, "hello", "world", ToolTipIcon.Info);
-            icon.Click += icon_Click;
-
-
             System.Windows.Application.Current.Exit += Current_Exit;
+            this.LoggerPage.IconUpdateNeeded += (sender, message) => Icon.UpdateIcon(message);
 
         }
 
        void Current_Exit(object sender, ExitEventArgs e)
        {
-           icon.Dispose();
+           Icon.icon.Dispose();
        }
-       
-       void icon_Click(object sender, EventArgs e)
-       {
-           this.WindowState= WindowState.Normal;
-           this.ShowInTaskbar = true;
-       }
+     
        
        protected override void OnClosing( CancelEventArgs e)
        {
@@ -67,63 +56,11 @@ namespace EventLogger
        
            this.WindowState = WindowState.Minimized;
            this.ShowInTaskbar = false;
-       
-           //messages.Clear();
-
-           App.Current.Properties["numOfMessages"] = 0;
            
-           UpdateIcon(0);
+           this.LoggerPage.messages.Clear();
+           
+           Icon.UpdateIcon(0);
        }
        
-       //public void NewMessageReceived(string message)
-       //{
-       //    UnreadErrorMessages errorMessage = JsonSerializer.DeserializeFromString<UnreadErrorMessages>(message);
-       //
-       //    
-       //    Dispatcher.Invoke(() =>
-       //    {
-       //        errorMessage.Unread.ForEach(m=>messages.Add(m));
-       //        
-       //    });
-       //
-       //    numOfNotifications = messages.Count();
-       //
-       //    UpdateIcon();
-       //
-       //}
-       //
-       private void UpdateIcon(int numOfNotifications)
-       {
-           if (numOfNotifications == 0)
-               icon.Icon = Properties.Resources.all_good;
-           else if (numOfNotifications > 99)
-               icon.Icon = Properties.Resources.angry_smiley;
-           else
-           {
-               icon.Icon = Properties.Resources.square_shape;
-               NumberOnIcon(numOfNotifications, ref icon);
-           }
-       }
-       
-       #region Notification number on icon
-       
-       public void NumberOnIcon(int number,  ref System.Windows.Forms.NotifyIcon icon)
-       {
-           Graphics canvas;
-           Bitmap iconBitmap = new Bitmap(60,60);
-           canvas = Graphics.FromImage(iconBitmap);
-           canvas.DrawIcon(icon.Icon, 0, 0);
-       
-           StringFormat format = new StringFormat();
-           format.Alignment = StringAlignment.Center;
-       
-           canvas.DrawString(number.ToString(),new Font("Calibri",30), new SolidBrush(System.Drawing.Color.Crimson), new RectangleF(0,0,60,60), format );
-       
-           icon.Icon = System.Drawing.Icon.FromHandle(iconBitmap.GetHicon());
-       }
-       
-       #endregion
-
-
     }
 }
