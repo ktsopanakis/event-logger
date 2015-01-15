@@ -23,7 +23,7 @@ namespace EventLogger
     /// <summary>
     /// Interaction logic for EventLoggerPage.xaml
     /// </summary>
-    public partial class EventLoggerPage : Page
+    public partial class EventLoggerPage : System.Windows.Controls.UserControl
     {
 
         public ObservableCollection<Message> messages = new ObservableCollection<Message>();
