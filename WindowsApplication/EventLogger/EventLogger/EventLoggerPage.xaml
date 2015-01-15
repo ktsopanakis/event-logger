@@ -3,8 +3,11 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:EventLogger"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
+
+    
     
     <Grid Style="{StaticResource ContentRoot}">
         <Grid.RowDefinitions>
@@ -18,21 +21,21 @@
                     <GridViewColumn Header="Date">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}" FontWeight="Bold" Name="DateBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="DateBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Origin">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Origin}" FontWeight="Bold" Name="OriginBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Origin}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="OriginBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Payload">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="Bold" Name="PayloadBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

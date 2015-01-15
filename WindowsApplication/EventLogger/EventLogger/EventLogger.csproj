@@ -73,10 +73,10 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="AppIcon.cs" />
+    <Compile Include="FontWeightConverter.cs" />
     <Compile Include="EventLoggerPage.xaml.cs">
       <DependentUpon>EventLoggerPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="MessageRead.cs" />
     <Compile Include="ServerConnection.cs" />
     <Compile Include="UnreadErrorMessages.cs" />
     <Page Include="EventLoggerPage.xaml">

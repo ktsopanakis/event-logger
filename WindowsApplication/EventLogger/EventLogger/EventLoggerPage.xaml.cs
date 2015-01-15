@@ -12,6 +12,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
 using System.Windows.Input;
+using System.Windows.Markup;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -63,7 +64,7 @@ namespace EventLogger
 
             });
 
-            OnIconUpdateNeeded(messages.Count());
+            OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
 
 
            // UpdateIcon();
@@ -75,6 +76,12 @@ namespace EventLogger
         {
             var selectedItem = (sender as System.Windows.Controls.ListView).SelectedItem;
 
+            var selectedIndex = (sender as System.Windows.Controls.ListView).SelectedIndex;
+
+            messages.ElementAt(selectedIndex).IsRead = true;
+
+            OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
+
             if (selectedItem != null)
             {
                 serve.Send(new
@@ -85,21 +92,7 @@ namespace EventLogger
                 });
             }
             
-
-
         }
     }
-
-    //public class MessagesEventArgs : EventArgs
-    //{
-    //    private int _numOfMessages;
-    //
-    //    public MessagesEventArgs(int numberOfMessages)
-    //    {
-    //        _numOfMessages = numberOfMessages;
-    //    }
-    //
-    //    public int NumOfMessages{ get { return _numOfMessages; } }
-    //}
 
 }
