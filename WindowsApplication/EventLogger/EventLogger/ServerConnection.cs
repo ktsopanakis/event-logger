@@ -52,7 +52,7 @@ namespace EventLogger
             });
         }
 
-        public void Send(string message)
+        public void Send(dynamic message)
         {
             socket.Emit("messageRead", message);
         }

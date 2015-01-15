@@ -77,17 +77,12 @@ namespace EventLogger
 
             if (selectedItem != null)
             {
-                MessageRead message = new MessageRead()
+                serve.Send(new
                 {
-                    Payload = new ReadPayLoad()
-                    {
-                        Origin = ((Message)selectedItem).Origin,
-                        Id = ((Message)selectedItem).Id,
-                        ReadFrom = System.Environment.MachineName + ":" + System.Environment.UserName
-                    }
-                };
-
-                serve.Send(JsonSerializer.SerializeToString<MessageRead>(message));
+                    origin = ((Message)selectedItem).Origin,
+                    id = ((Message)selectedItem).Id,
+                    readFrom = System.Environment.MachineName + ":" + System.Environment.UserName
+                });
             }
             
 

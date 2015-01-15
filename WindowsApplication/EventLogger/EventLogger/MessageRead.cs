@@ -7,23 +7,17 @@ using System.Threading.Tasks;
 
 namespace EventLogger
 {
-    [DataContract]
     public class MessageRead
     {
-        [DataMember(Name="payload")]
-        public ReadPayLoad Payload { get; set; }
+        public ReadPayLoad payload { get; set; }
     }
 
-    [DataContract]
     public class ReadPayLoad
     {
-        [DataMember(Name="origin")]
-        public string Origin { get; set; }
+        public string origin { get; set; }
 
-        [DataMember(Name="readFrom")]
-        public string ReadFrom { get; set; }
+        public string readFrom { get; set; }
 
-        [DataMember(Name="id")]
-        public string Id { get; set; }
+        public string id { get; set; }
     }
 }
