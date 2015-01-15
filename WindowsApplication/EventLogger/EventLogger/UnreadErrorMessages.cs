@@ -19,7 +19,7 @@ namespace EventLogger
     public class Message
     {
         [DataMember(Name="_id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember(Name="payload")]
         public string Payload { get; set; }

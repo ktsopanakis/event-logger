@@ -28,6 +28,7 @@ namespace EventLogger
 
         public ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public EventHandler<int> IconUpdateNeeded;
+        private ServerConnection serve;
 
         void OnIconUpdateNeeded(int numOfNotifications)
         {
@@ -38,7 +39,7 @@ namespace EventLogger
         {
             InitializeComponent();
             
-            ServerConnection serve = new ServerConnection();
+            serve = new ServerConnection();
             serve.MessageReceived += (sender, message) => NewMessageReceived(message);
             serve.ConnectToServer();
 
@@ -72,9 +73,25 @@ namespace EventLogger
 
         private void ErrorListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedRow = (sender as System.Windows.Controls.ListView).SelectedItem;
+            var selectedItem = (sender as System.Windows.Controls.ListView).SelectedItem;
 
+            if (selectedItem != null)
+            {
+                MessageRead message = new MessageRead()
+                {
+                    Payload = new ReadPayLoad()
+                    {
+                        Origin = ((Message)selectedItem).Origin,
+                        Id = ((Message)selectedItem).Id,
+                        ReadFrom = System.Environment.MachineName + ":" + System.Environment.UserName
+                    }
+                };
+
+                serve.Send(JsonSerializer.SerializeToString<MessageRead>(message));
+            }
             
+
+
         }
     }
 
