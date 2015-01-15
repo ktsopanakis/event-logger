@@ -8,4 +8,12 @@ html(lang='en', xmlns='http://www.w3.org/1999/xhtml')
       .main-content
         .main-head
           block main
+          p  Server up.. #{"\u2713"}
+          p  Number of unread error messages: #{unreadMessages.length}.
+          p  Number of read error messages: #{readMessages.length}.
+          p  Number of error message origins: #{origins.length}.
+          p  Origins: 
+          ul 
+            each origin in origins
+              li #{origin.name}
         block content

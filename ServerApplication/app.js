@@ -54,7 +54,50 @@ db.once('open', function () {
   });
   
   app.get("/test/", function(req, res){
-    res.render("test.jade");
+    var setOfCollections = db.collection("set_of_log_collections");
+    var total, unreadAppended, notRead, origins, read, readAppended;
+    function renderTheUI(total, notRead, read){
+      res.render("test.jade", {
+        unreadMessages: notRead,
+        readMessages: read,
+        origins: total
+      });
+    }
+    setOfCollections.find({}, function(err, colsCursor){
+      if(err) {console.log("finding the set of collection for the GET status view threw: ", err);}
+      colsCursor.toArray(function(err, colsArr){
+        if(err) {console.log("converting the set of log collections cursor to array for the GET status view threw: ", err);}
+        origins = colsArr;
+        total = colsArr.length;
+        unreadAppended = 0;
+        readAppended = 0;
+        notRead = [];
+        read = [];
+        if(total === 0) return renderTheUI(0, 0);
+        u.each(colsArr, function(colObj){
+          var currentCollection = db.collection(colObj.name);
+          currentCollection.find({isRead: false}, function(err, unreadErrorsCursor){
+            if(err) {console.log("gathering the unreadErrors for the GET status view threw: ", err);}
+            unreadErrorsCursor.toArray(function(err, unreadErrorsArr){
+              if(err) {console.log("converting the unreadErrorsCursor for the GET status view to array threw: ", err);}
+              notRead = notRead.concat(unreadErrorsArr);
+              unreadAppended += 1;
+              if(total === unreadAppended && total === readAppended) return renderTheUI(origins, notRead, read);
+            });
+          });
+          currentCollection.find({isRead: true}, function(err, readErrorCursor){
+            if(err) {console.log("gathering the unreadErrors for the GET status view threw: ", err);}
+            readErrorCursor.toArray(function(err, readErrorArr){
+              if(err) {console.log("converting the readErrorCursor for the GET status view to array threw: ", err);}
+              read = read.concat(readErrorArr);
+              readAppended += 1;
+              if(total === unreadAppended && total === readAppended) return renderTheUI(origins, notRead, read);
+            });
+          });
+        });
+      });
+    });
+    
   });
   
   app.get("/sockets.js", function (req, res) {
@@ -149,6 +192,7 @@ db.once('open', function () {
         obj.toArray(function(err, objArr){
           if(err) {console.log("find to array error: ", err);}
           var logToModify = objArr[0];
+          console.log("logToModify: ", logToModify);
           logToModify["isRead"] = true;
           if(logToModify["readFrom"] === undefined) logToModify["readFrom"] = [];
           logToModify["readFrom"].push(data.readFrom);
