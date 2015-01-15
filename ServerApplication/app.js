@@ -9,7 +9,8 @@ var express = require('express')
   , ejs = require('ejs')
   , logger = require("morgan")
   , bodyparser = require("body-parser")
-  , multer = require("multer");
+  , multer = require("multer")
+  , u = require("lodash-node");
 
 
 // Bootstrap db connection
@@ -65,6 +66,17 @@ db.once('open', function () {
   app.post("/event-logger/:hospital/", function(req, res){
     console.log("received post request for %s, with: ", req.params.hospital, req.body);
     var collection = db.collection(req.params.hospital);
+    var setOfCollections = db.collection("set_of_log_collections");
+    setOfCollections.find({name: req.params.hospital}, function(err, cols){
+      if(err) {console.log("setOfCollections find error: ", err);}
+      cols.toArray(function(err, colsArr){
+        if(colsArr === null || colsArr.length === 0){
+          setOfCollections.insert({name: req.params.hospital}, function(err){
+            if(err) {console.log("setOfCollections insert in db error: ", err);}
+          });
+        }
+      });
+    });
     var payload = req.body.payload || "";
     var identifier = req.body.identifier || "";
     var newEntry = {
@@ -86,16 +98,41 @@ db.once('open', function () {
     newEntry["identifier"] = identifier;
     newEntry["title"] = "";
     newEntry["origin"] = req.params.hospital;
-    collection.insert(newEntry, function(err){
-      if(err) {console.log(err);}
-      collection.find({"isRead": false}, function(err, data){
-        if(err) {console.log("error in find: ", err);}
-        data.toArray(function(err, unreadLogs){
-          io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
-          res.send("ok");
+    
+    function returnUnreadErrorMessages(){
+      function broadcastUnread(unreadLogs){
+        io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
+        res.send("ok");
+      }
+      setOfCollections.find({}, function(err, cols){
+        if(err) {console.log("set of log collections find all error: ", err);}
+        cols.toArray(function(err, colsArr){
+          if(err) {console.log("set of log collections to array conversion error: ", err)}
+          if(colsArr === null || colsArr.length === 0) return broadcastUnread([]);
+          var total = colsArr.length;
+          var appended = 0;
+          var notRead = [];
+          u.each(colsArr, function(collection){
+            var currentCollection = db.collection(collection.name);
+            currentCollection.find({isRead: false}, function(err, unreadFromCurrentCursor){
+              if(err) {console.log("find unread in collection threw err: ", err);}
+              unreadFromCurrentCursor.toArray(function(err, ureadFromCurrentArr){
+                if(err) {console.log("to array conversion threw err: ", err);}
+                notRead = notRead.concat(ureadFromCurrentArr);
+                appended += 1;
+                if(total === appended) broadcastUnread(notRead);
+              });
+            });
+          });
         });
       });
+    }
+    
+    collection.insert(newEntry, function(err){
+      if(err) {console.log(err);}
+      returnUnreadErrorMessages();
     });
+    
   });
   
   io.sockets.on("connection", function(socket){
