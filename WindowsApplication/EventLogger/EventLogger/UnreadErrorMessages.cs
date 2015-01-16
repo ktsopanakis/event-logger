@@ -19,7 +19,7 @@ namespace EventLogger
     public class Message
     {
         [DataMember(Name="_id")]
-        public int Id { get; set; }
+        public string Id { get; set; }
 
         [DataMember(Name="payload")]
         public string Payload { get; set; }
@@ -28,7 +28,7 @@ namespace EventLogger
         public Identifier Identifier { get; set; }
 
         [DataMember(Name = "timestamp")]
-        public string Timestamp { get { return null; } set { Date = UnixTimeStampToDateTime(Double.Parse(value)); }}
+        public string Timestamp { get { return null; } set { Date = (value!=null ? UnixTimeStampToDateTime(Double.Parse(value)): new DateTime()) ; }}
 
         public DateTime Date { get; set; }
 

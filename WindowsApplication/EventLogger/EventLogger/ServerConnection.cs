@@ -7,6 +7,7 @@ using System.Windows.Threading;
 using SimpleJson;
 using SocketIOClient;
 using Newtonsoft.Json;
+using SocketIOClient.Messages;
 
 namespace EventLogger
 {
@@ -44,14 +45,16 @@ namespace EventLogger
 
             socket.On("open", fn => { Console.WriteLine("On open message" + fn.MessageText); });
 
-            
             socket.On("unreadErrorMessages", fn =>
             {
                 message = fn.Json.Args[0].ToString();
                 OnMessageReceived(message);
             });
+        }
 
-
+        public void Send(dynamic message)
+        {
+            socket.Emit("messageRead", message);
         }
         
         #region Event Handlers
