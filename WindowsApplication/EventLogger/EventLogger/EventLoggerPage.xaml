@@ -16,6 +16,15 @@
         </Grid.RowDefinitions>
 
         <ListView Name="ErrorListView" SelectionChanged="ErrorListView_OnSelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding Path=IsRead}" Value="True">
+                            <Setter Property="FontWeight" Value="Normal"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Date">
@@ -36,6 +45,13 @@
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                    <GridViewColumn Header="IsRead">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding IsRead}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

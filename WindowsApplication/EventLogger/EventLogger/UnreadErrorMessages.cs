@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -16,7 +17,7 @@ namespace EventLogger
     }
 
     [DataContract]
-    public class Message
+    public class Message : INotifyPropertyChanged
     {
         [DataMember(Name="_id")]
         public string Id { get; set; }
@@ -51,6 +52,8 @@ namespace EventLogger
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
     }
 
     [DataContract]

@@ -57,8 +57,8 @@ namespace EventLogger
            this.WindowState = WindowState.Minimized;
            this.ShowInTaskbar = false;
 
-           var messagesToKeep = new ObservableCollection<Message>(this.LoggerPage.messages.Where(m => !m.IsRead));
-           this.LoggerPage.messages = (ObservableCollection<Message>)messagesToKeep;
+           //var messagesToKeep = new ObservableCollection<Message>(this.LoggerPage.messages.Where(m => !m.IsRead));
+           //this.LoggerPage.messages = (ObservableCollection<Message>)messagesToKeep;
 
            //if (messagesToRemove != null) 
            //{ 
@@ -68,7 +68,7 @@ namespace EventLogger
            //     }
            //}
            
-           Icon.UpdateIcon(0);
+           //Icon.UpdateIcon(0);
        }
        
     }

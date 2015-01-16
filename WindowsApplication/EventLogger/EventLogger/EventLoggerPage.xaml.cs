@@ -60,9 +60,15 @@ namespace EventLogger
 
             Dispatcher.Invoke(() =>
             {
-                errorMessage.Unread.ForEach(m => messages.Add(m));
+                if(!messages.Any())
+                    errorMessage.Unread.ForEach(m => messages.Add(m));
+                else
+                {
+                    messages = new ObservableCollection<Message>(errorMessage.Unread);
+                }
 
             });
+            
 
             OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
 

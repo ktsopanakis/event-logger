@@ -45,6 +45,12 @@ namespace EventLogger
 
             socket.On("open", fn => { Console.WriteLine("On open message" + fn.MessageText); });
 
+            socket.On("initialList", fn =>
+            {
+                message = fn.Json.Args[0].ToString();
+                OnMessageReceived(message);
+            });
+
             socket.On("unreadErrorMessages", fn =>
             {
                 message = fn.Json.Args[0].ToString();
