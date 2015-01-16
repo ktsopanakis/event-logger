@@ -42,7 +42,7 @@ namespace EventLogger
         private bool _isRead;
 
         [DataMember(Name = "isRead")]
-        public bool IsRead { get { return this._isRead; } set { this._isRead = value; NotifyPropertyChanged("IsRead "); } }
+        public bool IsRead { get { return this._isRead; } set { this._isRead = value; OnPropertyChanged("IsRead"); } }
 
         [DataMember(Name = "origin")]
         public string Origin { get; set; }
@@ -57,11 +57,12 @@ namespace EventLogger
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private void NotifyPropertyChanged(String info)
+        protected void OnPropertyChanged(String name)
         {
-            if (PropertyChanged != null)
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
             {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
+                handler(this, new PropertyChangedEventArgs(name));
             }
         }
     }

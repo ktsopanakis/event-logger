@@ -77,11 +77,6 @@ namespace EventLogger
             Console.WriteLine(e.Message);
         }
 
-       //static void SocketMessage(object sender, MessageEventArgs e)
-       //{
-       //    Console.WriteLine("message event handler");
-       //    Console.WriteLine(e.Message);
-       //}
 
         #endregion
     }
