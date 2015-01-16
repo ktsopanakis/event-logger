@@ -30,7 +30,7 @@ namespace EventLogger
 
         public ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public EventHandler<int> IconUpdateNeeded;
-        private ServerConnection serve;
+        public ServerConnection serve;
 
         void OnIconUpdateNeeded(int numOfNotifications)
         {
@@ -45,6 +45,7 @@ namespace EventLogger
             serve.MessageReceived += (sender, message) => NewMessageReceived(message);
             serve.ConnectToServer();
 
+            
             ErrorListView.ItemsSource = messages;
 
         }
