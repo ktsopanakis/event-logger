@@ -47,6 +47,7 @@ namespace EventLogger
        void Current_Exit(object sender, ExitEventArgs e)
        {
            Icon.icon.Dispose();
+
        }
      
        
