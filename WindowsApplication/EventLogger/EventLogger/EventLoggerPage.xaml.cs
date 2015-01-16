@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -57,14 +58,15 @@ namespace EventLogger
         {
             UnreadErrorMessages errorMessage = JsonSerializer.DeserializeFromString<UnreadErrorMessages>(message);
 
-
             Dispatcher.Invoke(() =>
             {
                 if(!messages.Any())
                     errorMessage.Unread.ForEach(m => messages.Add(m));
                 else
                 {
-                    messages = new ObservableCollection<Message>(errorMessage.Unread);
+                    var newMessages = errorMessage.Unread.SkipWhile(m => messages.Contains(m, AnonymousComparer.Create((Message ms)=> ms.Id)));
+                    foreach(var m in newMessages)
+                        messages.Add(m);
                 }
 
             });

@@ -39,8 +39,10 @@ namespace EventLogger
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
+        private bool _isRead;
+
         [DataMember(Name = "isRead")]
-        public bool IsRead { get; set; }
+        public bool IsRead { get { return this._isRead; } set { this._isRead = value; NotifyPropertyChanged("IsRead "); } }
 
         [DataMember(Name = "origin")]
         public string Origin { get; set; }
@@ -54,6 +56,14 @@ namespace EventLogger
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        private void NotifyPropertyChanged(String info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
     }
 
     [DataContract]
