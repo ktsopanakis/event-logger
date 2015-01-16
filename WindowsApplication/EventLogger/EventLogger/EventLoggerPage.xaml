@@ -32,7 +32,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Payload">
+                    <GridViewColumn Header="Payload" Width="200">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
