@@ -105,6 +105,32 @@ db.once('open', function () {
     res.setHeader('content-type', 'text/javascript');
     res.render('ejs/sockets.ejs', {server: config.domain, port: config.port});
   });
+
+  function returnUnreadErrorMessages(continuation){
+    var setOfCollections = db.collection("set_of_log_collections");
+    setOfCollections.find({}, function(err, cols){
+      if(err) {console.log("set of log collections find all error: ", err);}
+      cols.toArray(function(err, colsArr){
+        if(err) {console.log("set of log collections to array conversion error: ", err)}
+        if(colsArr === null || colsArr.length === 0) return continuation([]);
+        var total = colsArr.length;
+        var appended = 0;
+        var notRead = [];
+        u.each(colsArr, function(collection){
+          var currentCollection = db.collection(collection.name);
+          currentCollection.find({isRead: false}, function(err, unreadFromCurrentCursor){
+            if(err) {console.log("find unread in collection threw err: ", err);}
+            unreadFromCurrentCursor.toArray(function(err, ureadFromCurrentArr){
+              if(err) {console.log("to array conversion threw err: ", err);}
+              notRead = notRead.concat(ureadFromCurrentArr);
+              appended += 1;
+              if(total === appended) continuation(notRead);
+            });
+          });
+        });
+      });
+    });
+  }
   // identifier / payload / timestamp
   app.post("/event-logger/:hospital/", function(req, res){
     console.log("received post request for %s, with: ", req.params.hospital, req.body);
@@ -141,45 +167,31 @@ db.once('open', function () {
     newEntry["identifier"] = identifier;
     newEntry["title"] = "";
     newEntry["origin"] = req.params.hospital;
-    
-    function returnUnreadErrorMessages(){
-      function broadcastUnread(unreadLogs){
-        io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
-        res.send("ok");
-      }
-      setOfCollections.find({}, function(err, cols){
-        if(err) {console.log("set of log collections find all error: ", err);}
-        cols.toArray(function(err, colsArr){
-          if(err) {console.log("set of log collections to array conversion error: ", err)}
-          if(colsArr === null || colsArr.length === 0) return broadcastUnread([]);
-          var total = colsArr.length;
-          var appended = 0;
-          var notRead = [];
-          u.each(colsArr, function(collection){
-            var currentCollection = db.collection(collection.name);
-            currentCollection.find({isRead: false}, function(err, unreadFromCurrentCursor){
-              if(err) {console.log("find unread in collection threw err: ", err);}
-              unreadFromCurrentCursor.toArray(function(err, ureadFromCurrentArr){
-                if(err) {console.log("to array conversion threw err: ", err);}
-                notRead = notRead.concat(ureadFromCurrentArr);
-                appended += 1;
-                if(total === appended) broadcastUnread(notRead);
-              });
-            });
-          });
-        });
-      });
+
+    function broadcastUnread(unreadLogs){
+      io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
+      res.send("ok");
     }
     
     collection.insert(newEntry, function(err){
       if(err) {console.log(err);}
-      returnUnreadErrorMessages();
+      returnUnreadErrorMessages(broadcastUnread);
     });
     
   });
+
+  function clientInitializerOn(socket){
+    return function initializeClientList(unreadMessagesArray){
+      socket.emit('initialList', {unread: unreadMessagesArray});
+    }
+  }
+  
   
   io.sockets.on("connection", function(socket){
     console.log("openned websocket");
+    
+    returnUnreadErrorMessages(clientInitializerOn(socket));
+    
     socket.on("ping", function(d){
       console.log("received ping: ", d);
       socket.emit("pong", {});
