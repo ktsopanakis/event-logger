@@ -159,21 +159,17 @@ db.once('open', function () {
 
 
     var jsonAvailable=false;
-      var data=null;
+    var data=null;
     try{
         data=JSON.parse(req.text);
         jsonAvailable=true;
-        data.payload=JSON.stringify(data.payload);
-        data.identifier=JSON.stringify(data.identifier);
+        req.body.payload = JSON.stringify(data.payload);
+        req.body.identifier = JSON.stringify(data.identifier);
+        req.body.timestamp = data.timestamp;
     }catch(err){
 
     }
-
-    if(jsonAvailable){
-       req.body = data;
-    }
-
-    console.log(req.body);
+      
     var payload = req.body.payload || "";
     var identifier = req.body.identifier || "";
     var newEntry = {
