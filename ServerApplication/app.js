@@ -35,6 +35,15 @@ var app = express();
 app.use(logger('dev'));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({extended:true}));
+
+
+app.use(function(req, res, next){
+        req.text = '';
+        req.setEncoding('utf8');
+        req.on('data', function(chunk){ req.text += chunk });
+        req.on('end', next);
+});
+
 app.use(multer());
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -146,6 +155,25 @@ db.once('open', function () {
         }
       });
     });
+
+
+
+    var jsonAvailable=false;
+      var data=null;
+    try{
+        data=JSON.parse(req.text);
+        jsonAvailable=true;
+        data.payload=JSON.stringify(data.payload);
+        data.identifier=JSON.stringify(data.identifier);
+    }catch(err){
+
+    }
+
+    if(jsonAvailable){
+       req.body = data;
+    }
+
+    console.log(req.body);
     var payload = req.body.payload || "";
     var identifier = req.body.identifier || "";
     var newEntry = {
@@ -153,6 +181,9 @@ db.once('open', function () {
       isRead: false,
       receivedTime: Math.round(+new Date()/1000)
     };
+
+
+
     try{
       payload = JSON.parse(req.body.payload);
     }catch(e){
