@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -29,7 +30,7 @@ namespace EventLogger
 
         public ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public EventHandler<int> IconUpdateNeeded;
-        private ServerConnection serve;
+        public ServerConnection serve;
 
         void OnIconUpdateNeeded(int numOfNotifications)
         {
@@ -44,6 +45,7 @@ namespace EventLogger
             serve.MessageReceived += (sender, message) => NewMessageReceived(message);
             serve.ConnectToServer();
 
+            
             ErrorListView.ItemsSource = messages;
 
         }
@@ -57,12 +59,19 @@ namespace EventLogger
         {
             UnreadErrorMessages errorMessage = JsonSerializer.DeserializeFromString<UnreadErrorMessages>(message);
 
-
             Dispatcher.Invoke(() =>
             {
-                errorMessage.Unread.ForEach(m => messages.Add(m));
+                if(!messages.Any())
+                    errorMessage.Unread.ForEach(m => messages.Add(m));
+                else
+                {
+                    var newMessages = errorMessage.Unread.SkipWhile(m => messages.Contains(m, AnonymousComparer.Create((Message ms)=> ms.Id)));
+                    foreach(var m in newMessages)
+                        messages.Add(m);
+                }
 
             });
+            
 
             OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
 

@@ -31,6 +31,13 @@ namespace EventLogger
     {
         AppIcon Icon = new AppIcon();
 
+        public EventHandler AppClosing;
+
+        void OnAppClosing()
+        {
+            if (AppClosing != null) AppClosing(this, null);
+        }
+
         public EventLoggerMainWindow()
         {
             InitializeComponent();
@@ -41,12 +48,13 @@ namespace EventLogger
 
             System.Windows.Application.Current.Exit += Current_Exit;
             this.LoggerPage.IconUpdateNeeded += (sender, message) => Icon.UpdateIcon(message);
-
+            AppClosing += (sender, message) => this.LoggerPage.serve.Close();
         }
 
        void Current_Exit(object sender, ExitEventArgs e)
        {
            Icon.icon.Dispose();
+           OnAppClosing();
        }
      
        
@@ -56,19 +64,6 @@ namespace EventLogger
        
            this.WindowState = WindowState.Minimized;
            this.ShowInTaskbar = false;
-
-           var messagesToKeep = new ObservableCollection<Message>(this.LoggerPage.messages.Where(m => !m.IsRead));
-           this.LoggerPage.messages = (ObservableCollection<Message>)messagesToKeep;
-
-           //if (messagesToRemove != null) 
-           //{ 
-           //     foreach (var m in messagesToRemove)
-           //     {
-           //         this.LoggerPage.messages.Remove(m);
-           //     }
-           //}
-           
-           Icon.UpdateIcon(0);
        }
        
     }

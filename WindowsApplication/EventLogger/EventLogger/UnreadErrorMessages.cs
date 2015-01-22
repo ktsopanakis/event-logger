@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data.Common;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -16,7 +17,7 @@ namespace EventLogger
     }
 
     [DataContract]
-    public class Message
+    public class Message : INotifyPropertyChanged
     {
         [DataMember(Name="_id")]
         public string Id { get; set; }
@@ -38,8 +39,10 @@ namespace EventLogger
         [DataMember(Name = "title")]
         public string Title { get; set; }
 
+        private bool _isRead;
+
         [DataMember(Name = "isRead")]
-        public bool IsRead { get; set; }
+        public bool IsRead { get { return this._isRead; } set { this._isRead = value; OnPropertyChanged("IsRead"); } }
 
         [DataMember(Name = "origin")]
         public string Origin { get; set; }
@@ -50,6 +53,17 @@ namespace EventLogger
             System.DateTime dtDateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             dtDateTime = dtDateTime.AddSeconds(unixTimeStamp).ToLocalTime();
             return dtDateTime;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void OnPropertyChanged(String name)
+        {
+            PropertyChangedEventHandler handler = PropertyChanged;
+            if (handler != null)
+            {
+                handler(this, new PropertyChangedEventArgs(name));
+            }
         }
     }
 

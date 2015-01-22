@@ -17,6 +17,7 @@ namespace EventLogger
         private static Client socket;
         private static string message;
         public event EventHandler<string> MessageReceived;
+        public bool IsAlive;
 
         void OnMessageReceived(string mess)
         {
@@ -26,16 +27,19 @@ namespace EventLogger
         {
             WebSocketURI = new Uri("http://162.209.79.120:29017/");
             socket = new Client(WebSocketURI.ToString());
+            socket.RetryConnectionAttempts = 500;
 
             socket.Opened += SocketOpened;
             socket.Error += SocketError;
+            socket.SocketConnectionClosed += SocketConnectionClosed;
             //socket.Message += SocketMessage;
-
+            
             System.Net.WebRequest.DefaultWebProxy = null;
 
             try
             {
                 socket.Connect();
+                IsAlive = socket.IsConnected;
             }
             catch
             {
@@ -45,11 +49,24 @@ namespace EventLogger
 
             socket.On("open", fn => { Console.WriteLine("On open message" + fn.MessageText); });
 
+            socket.On("initialList", fn =>
+            {
+                message = fn.Json.Args[0].ToString();
+                OnMessageReceived(message);
+            });
+
             socket.On("unreadErrorMessages", fn =>
             {
                 message = fn.Json.Args[0].ToString();
                 OnMessageReceived(message);
             });
+
+        }
+
+
+        public void Close()
+        {
+            socket.Close();
         }
 
         public void Send(dynamic message)
@@ -69,13 +86,31 @@ namespace EventLogger
         {
             Console.WriteLine("error event handler");
             Console.WriteLine(e.Message);
+            try
+            {
+                Console.WriteLine("Connection closed trying to reconnect...");
+                socket.Connect();
+                IsAlive = socket.IsConnected;
+            }
+            catch
+            {
+            }
         }
 
-       //static void SocketMessage(object sender, MessageEventArgs e)
-       //{
-       //    Console.WriteLine("message event handler");
-       //    Console.WriteLine(e.Message);
-       //}
+        void SocketConnectionClosed(object sender, EventArgs e)
+        {
+            Console.WriteLine("error event handler");
+            Console.WriteLine(e.ToString());
+            try
+            {
+                Console.WriteLine("Connection closed trying to reconnect...");
+                socket.Connect();
+                IsAlive = socket.IsConnected;
+            }
+            catch
+            {
+            }
+        }
 
         #endregion
     }

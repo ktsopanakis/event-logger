@@ -18,7 +18,7 @@ namespace EventLogger
             icon.Icon = Properties.Resources.all_good;
 
             icon.Visible = true;
-            icon.ShowBalloonTip(5000, "hello", "world", ToolTipIcon.Info);
+            icon.ShowBalloonTip(5000, "Click here to", "open app window", ToolTipIcon.Info);
             icon.Click += icon_Click;
 
         }
@@ -39,25 +39,35 @@ namespace EventLogger
             else
             {
                 icon.Icon = Properties.Resources.square_shape;
-                NumberOnIcon(numOfNotifications, ref icon);
+                icon.Icon = NumberOnIcon(numOfNotifications);
             }
         }
 
         #region Notification number on icon
 
-        public void NumberOnIcon(int number, ref System.Windows.Forms.NotifyIcon icon)
+        public Icon NumberOnIcon(int number)
         {
-            Graphics canvas;
-            Bitmap iconBitmap = new Bitmap(60, 60);
-            canvas = Graphics.FromImage(iconBitmap);
-            canvas.DrawIcon(icon.Icon, 0, 0);
+            var bitmap = new Bitmap(32, 32);
 
-            StringFormat format = new StringFormat();
-            format.Alignment = StringAlignment.Center;
+            var numberdIcon = Properties.Resources.square_shape;
+            var drawFont = new System.Drawing.Font("Calibri", 16, System.Drawing.FontStyle.Bold);
+            var drawBrush = new System.Drawing.SolidBrush(System.Drawing.Color.Crimson);
 
-            canvas.DrawString(number.ToString(), new Font("Calibri", 30), new SolidBrush(System.Drawing.Color.Crimson), new RectangleF(0, 0, 60, 60), format);
+            System.Drawing.Graphics graphics = System.Drawing.Graphics.FromImage(bitmap);
 
-            icon.Icon = System.Drawing.Icon.FromHandle(iconBitmap.GetHicon());
+            graphics.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixel;
+            graphics.DrawIcon(numberdIcon, 0, 0);
+
+            graphics.DrawString(number.ToString(), drawFont, drawBrush, 1, 2);
+
+            Icon createdIcon = Icon.FromHandle(bitmap.GetHicon());
+
+            drawFont.Dispose();
+            drawBrush.Dispose();
+            graphics.Dispose();
+            bitmap.Dispose();
+
+            return createdIcon;
         }
 
         #endregion
