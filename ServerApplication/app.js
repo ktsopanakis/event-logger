@@ -134,6 +134,8 @@ db.once('open', function () {
   // identifier / payload / timestamp
   app.post("/event-logger/:hospital/", function(req, res){
     console.log("received post request for %s, with: ", req.params.hospital, req.body);
+    console.log("Content type header: ", req.headers["content-type"]);
+
     var collection = db.collection(req.params.hospital);
     var setOfCollections = db.collection("set_of_log_collections");
     setOfCollections.find({name: req.params.hospital}, function(err, cols){
@@ -146,27 +148,38 @@ db.once('open', function () {
         }
       });
     });
-    var payload = req.body.payload || "";
-    var identifier = req.body.identifier || "";
+    
     var newEntry = {
-      timestamp : req.body.timestamp,
-      isRead: false,
-      receivedTime: Math.round(+new Date()/1000)
+      receivedTime: Math.round(+new Date()/1000),
+      origin: req.params.hospital,
+      isRead: false
     };
-    try{
-      payload = JSON.parse(req.body.payload);
-    }catch(e){
-      console.log("payload failed to get parsed");
+
+    if(req["headers"]["content-type"] && req["headers"]["content-type"] === "application/json"){
+      if(u.has(req.body, "identifier")) newEntry["identifier"] = req.body.identifier;
+      if(u.has(req.body, "timestamp"))  newEntry["timestamp"] = req.body.timestamp;
+      if(u.has(req.body, "payload"))  newEntry["payload"] = req.body.payload;
+    }else{
+      var payload = req.body.payload || "";
+      var identifier = req.body.identifier || "";
+      newEntry["timestamp"] =  req.body.timestamp;
+        
+      try{
+        payload = JSON.parse(req.body.payload);
+      }catch(e){
+        console.log("payload failed to get parsed");
+      }
+      try{
+        identifier = JSON.parse(req.body.identifier);
+      }catch(e){
+        console.log("identifier failed to get parsed");
+      }
+      newEntry["payload"] = payload;
+      newEntry["identifier"] = identifier;
+      newEntry["title"] = "";
     }
-    try{
-      identifier = JSON.parse(req.body.identifier);
-    }catch(e){
-      console.log("identifier failed to get parsed");
-    }
-    newEntry["payload"] = payload;
-    newEntry["identifier"] = identifier;
-    newEntry["title"] = "";
-    newEntry["origin"] = req.params.hospital;
+    
+    console.log("newEntry: ", newEntry);
 
     function broadcastUnread(unreadLogs){
       io.sockets.in("").emit("unreadErrorMessages", {unread: unreadLogs});
