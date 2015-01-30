@@ -16,46 +16,63 @@
         </Grid.RowDefinitions>
 
         <ListView Name="ErrorListView" SelectionChanged="ErrorListView_OnSelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="Background" Value="{Binding Payload, Converter={local:BackColorConverter}}"/>
+                    <Setter Property="FontWeight" Value="{Binding IsRead, Converter={local:FontWeightConverter}}"/>
+                </Style>
+            </ListView.ItemContainerStyle>
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Date">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="DateBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Date}" Name="DateBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                     <GridViewColumn Header="Origin">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Origin}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="OriginBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Origin}" Name="OriginBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Payload" Width="200">
+                    <GridViewColumn Header="Payload" Width="400">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Payload}" Name="PayloadBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Identifier Type" Width="200">
+                    <GridViewColumn Header="Identifier Type" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Identifier.Type}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Identifier.Type}" Name="PayloadBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Identifier Value" Width="200">
+                    <GridViewColumn Header="Identifier Value" Width="100">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <TextBlock TextWrapping="Wrap" Text="{Binding Identifier.Value}" FontWeight="{Binding IsRead, Converter={local:FontWeightConverter}}" Name="PayloadBlock"/>
+                                <TextBlock TextWrapping="Wrap" Text="{Binding Identifier.Value}" Name="PayloadBlock"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
                 </GridView>
             </ListView.View>
         </ListView>
-        <Button Grid.Row="1"  Name="CloseButton" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Close Button" Click="CloseButton_OnClick"/>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Name="CopyButton" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Copy Line(s)" Click="CopyButton_OnClick"/>
+            <Button Grid.Column="1" Name="MarkAllAsReadButton" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Mark all as read" Click="MarkAllAsReadButton_OnClick"/>
+            <Button Grid.Column="2" Name="ClearReadLines" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Clear all read lines" Click="ClearReadLines_OnClick"/>
+            <Button Grid.Column="3" Name="CloseButton" HorizontalAlignment="Center" VerticalAlignment="Center" Content="Close Application" Click="CloseButton_OnClick"/>
+        </Grid>
     </Grid>
 </UserControl>

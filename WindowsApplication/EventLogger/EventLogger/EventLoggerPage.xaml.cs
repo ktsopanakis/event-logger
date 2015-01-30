@@ -72,7 +72,6 @@ namespace EventLogger
 
             });
             
-
             OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
 
 
@@ -83,24 +82,91 @@ namespace EventLogger
 
         private void ErrorListView_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedItem = (sender as System.Windows.Controls.ListView).SelectedItem;
+            var selectedItems = (sender as System.Windows.Controls.ListView).SelectedItems;
 
-            var selectedIndex = (sender as System.Windows.Controls.ListView).SelectedIndex;
+            if (selectedItems != null)
+            {
+                foreach (var item in selectedItems)
+                {
+                    if (item != null)
+                    {
+                        messages.FirstOrDefault(m => m.Equals(item)).IsRead = true;
 
-            messages.ElementAt(selectedIndex).IsRead = true;
+                        OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
+
+                        serve.Send(new
+                        {
+                            origin = ((Message)item).Origin,
+                            id = ((Message)item).Id,
+                            readFrom = System.Environment.MachineName + ":" + System.Environment.UserName
+                        });
+                    }
+                }
+            }
+        }
+
+        private void CopyButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            var selectedItems = ErrorListView.SelectedItems;
+            string textToCopy="";
+
+            if (selectedItems == null)
+            {
+                System.Windows.MessageBox.Show("You haven't selected any line to copy");
+            }
+            else
+            {
+                foreach (var item in selectedItems)
+                {
+                    var messageItem = item as Message;
+                    messages.FirstOrDefault(m => m.Equals(messageItem)).IsRead = true;
+                    textToCopy += messageItem.MessageToString() + Environment.NewLine;
+                }
+
+                System.Windows.Clipboard.SetText(textToCopy);
+
+                System.Windows.MessageBox.Show("Your selection has been copied to the clipboard", "Copy to Clipboard",
+                    MessageBoxButton.OK);
+            }
+        }
+
+        private void MarkAllAsReadButton_OnClick(object sender, RoutedEventArgs e)
+        {
+            foreach (var message in messages)
+            {
+                if (!message.IsRead)
+                {
+                    message.IsRead = true;
+
+                    serve.Send(new
+                    {
+                        origin = message.Origin,
+                        id = message.Id,
+                        readFrom = System.Environment.MachineName + ":" + System.Environment.UserName
+                    });
+                }
+            }
 
             OnIconUpdateNeeded(messages.Count(m => !m.IsRead));
+        }
 
-            if (selectedItem != null)
+        private void ClearReadLines_OnClick(object sender, RoutedEventArgs e)
+        {
+            List<Message> messagesToRemove = new List<Message>();
+
+            foreach (var message in messages)
             {
-                serve.Send(new
+                if (message.IsRead)
                 {
-                    origin = ((Message)selectedItem).Origin,
-                    id = ((Message)selectedItem).Id,
-                    readFrom = System.Environment.MachineName + ":" + System.Environment.UserName
-                });
+                    messagesToRemove.Add(message);
+                }
             }
-            
+
+            foreach (var message in messagesToRemove)
+            {
+                if (messages.Contains(message))
+                    messages.Remove(message);
+            }
         }
     }
 

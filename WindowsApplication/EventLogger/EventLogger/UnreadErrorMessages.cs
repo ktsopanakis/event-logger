@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Media;
 
 namespace EventLogger
 {
@@ -22,8 +23,24 @@ namespace EventLogger
         [DataMember(Name="_id")]
         public string Id { get; set; }
 
+       // private string _payload;
         [DataMember(Name="payload")]
-        public string Payload { get; set; }
+        public string Payload { 
+            //get { return _payload; } 
+            //set { 
+            //    _payload = value; 
+            //    if (_payload.Contains("IntegratedBedsideTerminal.exe"))
+            //    {
+            //        BackColor = new SolidColorBrush() { Color = Colors.Green };
+            //    }
+            //    else
+            //    {
+            //        BackColor = new SolidColorBrush() { Color = Colors.White};
+            //    }
+            //} 
+            get; set; }
+
+      //  public SolidColorBrush BackColor { get; set; }
 
         [DataMember(Name = "identifier")]
         public Identifier Identifier { get; set; }

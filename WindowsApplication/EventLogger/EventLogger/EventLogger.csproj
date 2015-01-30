@@ -102,6 +102,8 @@
     </ApplicationDefinition>
     <Compile Include="AnonymousComparer.cs" />
     <Compile Include="AppIcon.cs" />
+    <Compile Include="BackColorConverter.cs" />
+    <Compile Include="EventMessageSerializer.cs" />
     <Compile Include="FontWeightConverter.cs" />
     <Compile Include="EventLoggerPage.xaml.cs">
       <DependentUpon>EventLoggerPage.xaml</DependentUpon>
